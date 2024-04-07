@@ -1,0 +1,69 @@
+
+```{r}
+source("00-project-setup.R")
+```
+
+```{r}
+#| label: read and process mcas data
+
+# Read MCAS data, keep only district, subject, meets/exceeds and exceeds stats,
+# and reshape wide, so that each observation is a district
+mcas <- 
+  read.xlsx("data/NextGenMCAS.xlsx",
+            startRow = 2) %>% 
+  select(distr_name = District.Name,
+         distr_code = District.Code,
+         subj = Subject,
+         me_pct = `M+E.%`,
+         e_pct  = `E.%`) %>% 
+  mutate(me_pct = me_pct / 100,
+         e_pct  =  e_pct / 100) %>% 
+  pivot_longer(cols = -c(distr_name, distr_code, subj)) %>% 
+  pivot_wider(names_from = c(name, subj))
+```
+
+
+```{r}
+#| label: read and process teacher salaries
+pay <- 
+  read.xlsx("data/TeacherSalaries.xlsx",
+            startRow = 2) %>% 
+  select(distr_name = District.Name,
+         distr_code = District.Code,
+         avg_pay = Average.Salary) %>% 
+  mutate(avg_pay = 
+           avg_pay %>% 
+           str_replace_all("\\$|,", "") %>% 
+           str_trim() %>% 
+           as.numeric(),
+         avg_pay_k = avg_pay / 1000)
+```
+
+
+```{r}
+#| label: read and process teacher experience
+exp <- 
+  read.xlsx("data/teacherdata.xlsx",
+            startRow = 2) %>% 
+  select(distr_name = District.Name,
+         distr_code = District.Code,
+         stud_teach_ratio_raw = `Student./.Teacher.Ratio`,
+         lic_pct    = `%.of.Teachers.Licensed`,
+         exp_pct = `Percent.of.Experienced.Teachers`) %>% 
+  mutate(exp_pct = as.numeric(exp_pct) / 100,
+         stud_teach_ratio = 
+           stud_teach_ratio_raw %>% 
+           str_trim() %>% 
+           str_extract("^\\d+\\.\\d") %>% 
+           as.numeric())
+
+# Inspect read of student-teacher ratio
+if (FALSE) {
+  exp %>% 
+    select(stud_teach_ratio_raw,
+           stud_teach_ratio) %>% 
+    head()
+}
+
+```
+
