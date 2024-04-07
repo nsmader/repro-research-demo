@@ -1,10 +1,15 @@
 # repro-research-demo
 This is a demo of Quarto and git intended to demonstrate a workflow for reproducible research
 
-# Data
+# Overview
 
-Data for this demo are draw from the Massachusetts Department of Education [School and District Profiles](https://profiles.doe.mass.edu/statereport). Individual reports are pulled manually from the following pages, filtering on year 2023 and clicking the "Export" button to download `.xlsx` files for read-in by the `0a` scripts:
+This is a demo of Quarto and git intended to demonstrate a workflow for reproducible research. 
 
-* [Next Generation MCAS Scores](https://profiles.doe.mass.edu/statereport/nextgenmcas.aspx)
-* [Teacher Salaries](https://profiles.doe.mass.edu/statereport/teachersalaries.aspx)
-* [Staffing Retention Rates](https://profiles.doe.mass.edu/statereport/staffingRetentionRates.aspx)
+This repository has been developed as a proof of concept 
+
+# References
+
+See this [video](https://www.youtube.com/watch?v=Qrz2rUWM-uY) for inspiration on using Quarto for reproducible research, and the [Quarto guide](https://quarto.org/docs/guide/) for references.
+
+See this [video](https://www.youtube.com/watch?v=USjZcfj8yxE) to (purportedly) learn `git` in 15 minutes.
+
