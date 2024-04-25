@@ -8,7 +8,7 @@ source("00-project-setup.R")
 
 # Read MCAS data, keep only district, subject, meets/exceeds and exceeds stats,
 # and reshape wide, so that each observation is a district
-mcas <- 
+mcas_longest <- 
   read.xlsx("data/NextGenMCAS.xlsx",
             startRow = 2) %>% 
   select(distr_name = District.Name,
@@ -18,7 +18,14 @@ mcas <-
          e_pct  = `E.%`) %>% 
   mutate(me_pct = me_pct / 100,
          e_pct  =  e_pct / 100) %>% 
-  pivot_longer(cols = -c(distr_name, distr_code, subj)) %>% 
+  pivot_longer(cols = -c(distr_name, distr_code, subj))
+
+mcas_long <- 
+  mcas_longest %>% 
+  pivot_wider(names_from = c(name))
+
+mcas_wide <- 
+  mcas_longest %>% 
   pivot_wider(names_from = c(name, subj))
 ```
 
@@ -66,4 +73,34 @@ if (FALSE) {
 }
 
 ```
+
+
+```{r}
+#| label: merge data
+
+to_merge <- list(mcas_long, pay, exp)
+dt <- 
+  Reduce(function(x, y) merge(x, y, c("distr_name", "distr_code")), 
+         to_merge)
+```
+
+```{r}
+#| label: visualize mcas scores versus teacher pay and experience
+
+ggplot(dt,
+       aes(x = exp_pct,
+           y = me_pct)) +
+  geom_point(alpha = 0.3) + 
+  geom_smooth() + 
+  facet_wrap(~ subj) +
+  labs(title = "District Rates of MCAS Proficiency by Teacher Experience",
+       x = '% of teachers that are "experienced"',
+       y = "% students who 'met'/'exceeded' the MCAS proficiency standard",
+       caption = 'Note: teachers are "experienced" if they are XYZ.') +
+  scale_x_continuous(labels = percent) +
+  scale_y_continuous(labels = percent) +
+  theme(plot.title.position = "plot") +
+  theme_minimal()
+```
+
 
