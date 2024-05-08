@@ -36,7 +36,8 @@ pay <-
            str_replace_all("\\$|,", "") %>% 
            str_trim() %>% 
            as.numeric(),
-         avg_pay_k = avg_pay / 1000)
+         avg_pay_10k = avg_pay / 10000) %>% 
+  select(-avg_pay)
 ```
 
 
@@ -51,11 +52,13 @@ exp <-
          lic_pct    = `%.of.Teachers.Licensed`,
          exp_pct = `Percent.of.Experienced.Teachers`) %>% 
   mutate(exp_pct = as.numeric(exp_pct) / 100,
+         lic_pct = as.numeric(lic_pct) / 100,
          stud_teach_ratio = 
            stud_teach_ratio_raw %>% 
            str_trim() %>% 
            str_extract("^\\d+\\.\\d") %>% 
-           as.numeric())
+           as.numeric()) %>% 
+  select(-stud_teach_ratio_raw)
 
 # Inspect read of student-teacher ratio
 if (FALSE) {
@@ -65,5 +68,18 @@ if (FALSE) {
     head()
 }
 
+```
+
+```{r}
+#| label: merge data
+
+lData <- list(mcas, pay, exp)
+
+merge_ed <- function(x, y) merge(x, y, by = c("distr_name", "distr_code"))
+
+ma_ed <- Reduce(merge_ed, lData)
+
+save(ma_ed, 
+     file = "ma_ed.Rda")
 ```
 
