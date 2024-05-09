@@ -21,3 +21,53 @@ ma_pov <-
          pov_n = B16004_002)
 
 ```
+
+```{r}
+#| label: source and compare school district geographies to district names in teacher data
+
+# Pull Massachusetts school district geographies from the Census TIGER service
+ma_sds <- tigris::school_districts(state = "MA")
+
+# Load teacher data
+load("data/ma_ed.Rda")
+
+# Compare school districts in shape file to teacher data
+cbind(ma_sds$NAME      %>% sort() %>% head(20), 
+      ma_ed$distr_name %>% sort() %>% unique() %>% head(20))
+```
+
+```{r iteratively clean and compare lists}
+# Clean extraneous labels to get to district name
+ma_sds <- 
+  ma_sds %>% 
+  mutate(distr_name_forcomp = 
+           NAME %>% 
+           str_replace("(Regional)? School District", "") %>% 
+           str_trim() %>% 
+           str_to_lower())
+
+ma_ed <- 
+  ma_ed %>% 
+  mutate(distr_name_forcomp =
+           distr_name %>% 
+           str_replace_all("\\(District\\)", "") %>% 
+           str_replace_all("(Regional|Charter) School District", "") %>% 
+           str_replace_all("Regional$", "") %>% 
+           str_trim() %>% 
+           str_to_lower())
+
+### Assess status of cleaning
+  
+# Calculate matches
+ma_sds_match <- ma_sds$distr_name_forcomp %in% ma_ed$distr_name_forcomp
+# What percent match?
+mean(ma_sds_match)
+# Which don't match?
+non_matches <- ma_sds$distr_name_forcomp[!ma_sds_match]
+print(non_matches)
+
+# Some code to interactively investigate
+str_subset(ma_sds$distr_name_forcomp, paste(non_matches, collapse = "|"))
+str_subset(unique(ma_ed$distr_name_forcomp), paste(non_matches, collapse = "|"))
+
+```
