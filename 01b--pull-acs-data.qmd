@@ -103,4 +103,34 @@ tr_sd_xwalk <-
 
 ```
 
+```{r}
+#| label: aggregate poverty data to school district level
+
+ma_pov_distr <- 
+  ma_pov %>% 
+  as.data.frame() %>% 
+  merge(tr_sd_xwalk,
+        by = "GEOID") %>% 
+  summarize(all_n = sum(all_n),
+            pov_n = sum(pov_n),
+            .by = distr_name_forcomp) %>% 
+  mutate(pov_pct = pov_n / all_n)
+
+# Examine distribution of poverty
+ggplot(ma_pov_distr %>% sample_n(20),
+       aes(x = reorder(distr_name_forcomp, pov_pct),
+           y = pov_pct,
+           fill = pov_pct)) +
+  geom_bar(stat = "identity") +
+  scale_y_continuous(labels = percent) + 
+  labs(title = "Poverty Rate for a Random Sample of Districts",
+       x = "",
+       y = "") +
+  theme(axis.text.x = element_text(angle = 90,
+                                   hjust = 1,
+                                   vjust = 0.5),
+        legend.position = "none")
   
+```
+```
+
