@@ -28,7 +28,7 @@ ma_pov <-
 #| label: source and compare school district geographies to district names in teacher data
 
 # Pull Massachusetts school district geographies from the Census TIGER service
-ma_sds <- tigris::school_districts(state = "MA")
+ma_sds <- tigris::school_districts(state = "MA", cb = TRUE)
 
 # Load teacher data
 load("data/ma_ed.Rda")
@@ -76,3 +76,31 @@ str_subset(unique(ma_ed$distr_name_forcomp), paste(non_matches, collapse = "|"))
 
 ```
 
+```{r}
+#| label: generate a mapping between tracts and school districts for aggregation
+
+# First ensure that the poverty data and school districts have the same 
+# coordinate reference system
+st_crs(ma_pov) <- st_crs(ma_sds)
+
+# Generate the intersection of tracts and school districts
+# Note: this operation creates a row for every unique overlap of geography, as
+# if cutting stained glass based on the overlap of multiple layers
+tr_sd_intersect <- st_intersection(ma_pov, ma_sds)
+
+# Calculate the size of overlap to identify small parts of tracts that do not
+# merit maintaining
+tr_sd_xwalk <- 
+  tr_sd_intersect %>% 
+  mutate(area = st_area(tr_sd_intersect)) %>% 
+  mutate(pct_tract_in_sd = area / sum(area),
+          .by = GEOID) %>% 
+  filter(as.numeric(pct_tract_in_sd) > 0.1) %>% 
+  # recalculate percentages
+  mutate(pct_tract_in_sd = area / sum(area),
+          .by = GEOID) %>% 
+  select(GEOID, distr_name_forcomp, pct_tract_in_sd)
+
+```
+
+  
