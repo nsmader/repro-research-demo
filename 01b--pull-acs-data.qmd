@@ -28,7 +28,14 @@ ma_pov <-
 #| label: source and compare school district geographies to district names in teacher data
 
 # Pull Massachusetts school district geographies from the Census TIGER service
-ma_sds <- tigris::school_districts(state = "MA", cb = TRUE)
+elem_sds <- tigris::school_districts(state = "MA", cb = TRUE, type = 'elementary')
+secd_sds <- tigris::school_districts(state = "MA", cb = TRUE, type = 'secondary')
+unif_sds <- tigris::school_districts(state = "MA", cb = TRUE, type = 'unified')
+
+ma_sds <- 
+  bind_rows(elem_sds %>% mutate(level = "elementary"), 
+            secd_sds %>% mutate(level = "secondary"), 
+            unif_sds %>% mutate(level = "unified"))
 
 # Load teacher data
 load("data/ma_ed.Rda")
