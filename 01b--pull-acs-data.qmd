@@ -132,5 +132,11 @@ ggplot(ma_pov_distr %>% sample_n(20),
         legend.position = "none")
   
 ```
+
+```{r}
+#| label: save output
+
+save(ma_pov_distr, ma_sds,
+     file = "data/geo_data.Rda")
 ```
 
