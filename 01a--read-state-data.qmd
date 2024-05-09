@@ -8,7 +8,7 @@ source("00-project-setup.R")
 
 # Read MCAS data, keep only district, subject, meets/exceeds and exceeds stats,
 # and reshape wide, so that each observation is a district
-mcas <- 
+mcas_longest <- 
   read.xlsx("data/NextGenMCAS.xlsx",
             startRow = 2) %>% 
   select(distr_name = District.Name,
@@ -18,7 +18,14 @@ mcas <-
          e_pct  = `E.%`) %>% 
   mutate(me_pct = me_pct / 100,
          e_pct  =  e_pct / 100) %>% 
-  pivot_longer(cols = -c(distr_name, distr_code, subj)) %>% 
+  pivot_longer(cols = -c(distr_name, distr_code, subj))
+
+mcas_long <- 
+  mcas_longest %>% 
+  pivot_wider(names_from = c(name))
+
+mcas_wide <- 
+  mcas_longest %>% 
   pivot_wider(names_from = c(name, subj))
 ```
 
@@ -73,7 +80,7 @@ if (FALSE) {
 ```{r}
 #| label: merge data
 
-lData <- list(mcas, pay, exp)
+lData <- list(mcas_long, pay, exp)
 
 merge_ed <- function(x, y) merge(x, y, by = c("distr_name", "distr_code"))
 
@@ -82,4 +89,3 @@ ma_ed <- Reduce(merge_ed, lData)
 save(ma_ed, 
      file = "ma_ed.Rda")
 ```
-
