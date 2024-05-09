@@ -49,7 +49,7 @@ ma_sds <-
            str_trim() %>% 
            str_to_lower())
 
-ma_ed <- 
+ma_ed_formerge <- 
   ma_ed %>% 
   mutate(distr_name_forcomp =
            distr_name %>% 
@@ -62,7 +62,7 @@ ma_ed <-
 ### Assess status of cleaning
   
 # Calculate matches
-ma_sds_match <- ma_sds$distr_name_forcomp %in% ma_ed$distr_name_forcomp
+ma_sds_match <- ma_sds$distr_name_forcomp %in% ma_ed_formerge$distr_name_forcomp
 # What percent match?
 mean(ma_sds_match)
 # Which don't match?
@@ -71,7 +71,7 @@ print(non_matches)
 
 # Some code to interactively investigate
 str_subset(ma_sds$distr_name_forcomp, paste(non_matches, collapse = "|"))
-str_subset(unique(ma_ed$distr_name_forcomp), paste(non_matches, collapse = "|"))
+str_subset(unique(ma_ed_formerge$distr_name_forcomp), paste(non_matches, collapse = "|"))
 
 
 ```
@@ -136,7 +136,7 @@ ggplot(ma_pov_distr %>% sample_n(20),
 ```{r}
 #| label: save output
 
-save(ma_pov_distr, ma_sds,
+save(ma_pov_distr, ma_sds, ma_ed_formerge,
      file = "data/geo_data.Rda")
 ```
 
