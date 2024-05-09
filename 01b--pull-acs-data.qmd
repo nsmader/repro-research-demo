@@ -1,0 +1,23 @@
+---
+title: "Untitled"
+format: html
+editor: source
+---
+
+```{r}
+#| label: pull ACS data
+
+# Metadata for American Community Survey Poverty table (among multiple options): 
+#   https://pearson.socialexplorer.com/data/ACS2022/metadata/?ds=ACS22&table=B16004
+ma_pov <- 
+  get_acs(
+    geography = "tract", 
+    variables = c("B16004_001", "B16004_002"),
+    state = "MA", 
+    year = 2022,
+    geometry = TRUE
+  )%>% 
+  rename(all_n = B16004_001,
+         pov_n = B16004_002)
+
+```
