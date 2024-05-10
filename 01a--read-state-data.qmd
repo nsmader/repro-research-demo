@@ -60,6 +60,8 @@ exp <-
          exp_pct = `Percent.of.Experienced.Teachers`) %>% 
   mutate(exp_pct = as.numeric(exp_pct) / 100,
          lic_pct = as.numeric(lic_pct) / 100,
+         exp_pct_10pp = exp_pct * 10,
+         lic_pct_10pp = lic_pct * 10,
          stud_teach_ratio = 
            stud_teach_ratio_raw %>% 
            str_trim() %>% 
