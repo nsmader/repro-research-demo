@@ -8,18 +8,18 @@ editor: source
 #| label: pull ACS data
 
 # Metadata for American Community Survey Poverty table (among multiple options): 
-#   https://pearson.socialexplorer.com/data/ACS2022/metadata/?ds=ACS22&table=B16004
+#   https://pearson.socialexplorer.com/data/ACS2022/metadata/?ds=ACS22&table=B14006
 ma_pov <- 
   get_acs( 
     geography = "tract", 
-    variables = c("B16004_001", "B16004_002"),
+    variables = c("B14006_001", "B14006_002"),
     state = "MA", 
     year = 2022,
     geometry = TRUE,
     output = "wide",
   ) %>% 
-  rename(all_n = B16004_001E,
-         pov_n = B16004_002E) %>% 
+  rename(all_n = B14006_001E,
+         pov_n = B14006_002E) %>% 
   select(GEOID, all_n, pov_n)
 
 ```
